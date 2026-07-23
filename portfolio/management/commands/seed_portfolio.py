@@ -90,7 +90,7 @@ class Command(BaseCommand):
             ),
             image="projects/ddos_main.jpg",
             tech_stack="Python, Django, Scikit-learn, Pandas, NumPy, SQLite, HTML, CSS, JavaScript",
-            github_url="https://github.com/Sreesh-S/DoS-DDoS-Attack-Detection-System",
+            github_url="https://github.com/Sreesh-S/DDOS_ATTACK_DETECTOR",
             live_url="",
             is_featured=True,
             features=json.dumps([
@@ -123,7 +123,7 @@ class Command(BaseCommand):
             ),
             image="projects/blood_main.jpg",
             tech_stack="Python, Machine Learning, OCR, Data Processing",
-            github_url="https://github.com/Sreesh-S/Smart-Blood-Report-Analyzer-Disease-Predictor",
+            github_url="https://github.com/Sreesh-S/Smart-blood-report-analyzer",
             live_url="",
             is_featured=False,
             features=json.dumps([
@@ -153,7 +153,7 @@ class Command(BaseCommand):
             ),
             image="projects/ev_main.jpg",
             tech_stack="HTML, CSS, JavaScript, Node.js, Database Integration",
-            github_url="https://github.com/Sreesh-S/EV-Charging-Station-Locator",
+            github_url="https://github.com/Sreesh-S/ChargeQuest",
             live_url="",
             is_featured=False,
             features=json.dumps([
@@ -180,7 +180,7 @@ class Command(BaseCommand):
             ),
             image="projects/vkart_main.jpg",
             tech_stack="HTML, CSS, JavaScript, PHP, MySQL",
-            github_url="https://github.com/Sreesh-S/VKART-Online-Grocery-Web-Application",
+            github_url="https://github.com/Sreesh-S/vkart-online-grocery-app",
             live_url="",
             is_featured=False,
             features=json.dumps([
@@ -208,7 +208,7 @@ class Command(BaseCommand):
             ),
             image="projects/draupadi_main.jpg",
             tech_stack="React, JavaScript, Vite, Supabase, TailwindCSS, CSS3",
-            github_url="https://github.com/Sreesh-S/draupadi-saree-ecommerce",
+            github_url="https://github.com/Sreesh-S/Draupadi-saree-website-",
             live_url="",
             is_featured=False,
             features=json.dumps([
