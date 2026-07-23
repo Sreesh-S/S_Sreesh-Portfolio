@@ -22,11 +22,9 @@
         </div>
         
         <div class="project-hero-actions">
-            {% if project.github_url %}
-                <a href="{{ project.github_url }}" target="_blank" class="btn btn-primary btn-glow">
-                    <i class="fa-brands fa-github"></i> <span>View Code</span>
-                </a>
-            {% endif %}
+            <a href="{{ project.github_url|default:'https://github.com/Sreesh-S' }}" target="_blank" class="btn btn-primary btn-glow">
+                <i class="fa-brands fa-github"></i> <span>View Code</span>
+            </a>
             {% if project.live_url %}
                 <a href="{{ project.live_url }}" target="_blank" class="btn btn-outline">
                     <i class="fa-solid fa-square-arrow-up-right"></i> <span>Live Demo</span>

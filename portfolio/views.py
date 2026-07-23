@@ -310,19 +310,34 @@ def download_resume(request):
     # Track the download IP
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     ip = x_forwarded_for.split(',')[0].strip() if x_forwarded_for else request.META.get('REMOTE_ADDR')
-    ResumeAnalytics.objects.create(ip_address=ip)
+    try:
+        ResumeAnalytics.objects.create(ip_address=ip)
+    except Exception:
+        pass
 
     # 1. Check for explicitly active ResumeFile
     active_resume = ResumeFile.objects.filter(is_active=True).first()
     if active_resume and active_resume.file:
-        return FileResponse(active_resume.file, as_attachment=True)
+        try:
+            return FileResponse(active_resume.file.open('rb'), as_attachment=True, filename="S_Sreesh_Resume.pdf")
+        except Exception:
+            pass
     
     # 2. Fallback to Profile resume field
     profile = Profile.objects.first()
     if profile and profile.resume:
-        return FileResponse(profile.resume, as_attachment=True)
+        try:
+            return FileResponse(profile.resume.open('rb'), as_attachment=True, filename="S_Sreesh_Resume.pdf")
+        except Exception:
+            pass
+            
+    # 3. Direct File Fallback to media/resumes/sreesh_resume.pdf
+    resume_path = os.path.join(settings.MEDIA_ROOT, 'resumes', 'sreesh_resume.pdf')
+    if os.path.exists(resume_path):
+        return FileResponse(open(resume_path, 'rb'), as_attachment=True, filename="S_Sreesh_Resume.pdf")
     
     raise Http404("Resume file not found. Please upload it via the Django admin.")
+
 
 
 def blog_list(request):

@@ -19,6 +19,7 @@ class Command(BaseCommand):
             linkedin="https://www.linkedin.com/in/s-sreesh",
             github="https://github.com/Sreesh-S",
             portfolio_url="https://sreesh-portfolio.vercel.app/",
+            resume="resumes/sreesh_resume.pdf",
             bio=(
                 "Aspiring Python Developer completed Master of Computer Applications with a strong interest in "
                 "Software Development. Experienced in developing academic and project-based applications involving "

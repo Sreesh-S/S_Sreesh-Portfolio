@@ -378,13 +378,13 @@
                                 {% endfor %}
                             </div>
                             
-                            <div class="project-actions flex-bottom">
+                            <div class="project-actions flex-bottom" style="display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 1rem;">
                                 <a href="{% url 'portfolio:project_detail' project.slug %}" class="btn btn-outline btn-sm btn-glow">
                                     <span>Case Study</span> <i class="fa-solid fa-chevron-right"></i>
                                 </a>
-                                {% if project.github_url %}
-                                    <a href="{{ project.github_url }}" target="_blank" class="icon-btn-plain" aria-label="GitHub Repository"><i class="fa-brands fa-github"></i></a>
-                                {% endif %}
+                                <a href="{{ project.github_url|default:'https://github.com/Sreesh-S' }}" target="_blank" class="btn btn-glass btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.75rem; font-size: 0.8rem; text-decoration: none;" title="GitHub Code Repository">
+                                    <i class="fa-brands fa-github" style="font-size: 1rem; color: var(--primary-accent);"></i> <span>GitHub Code</span>
+                                </a>
                             </div>
                         </div>
                     </div>
