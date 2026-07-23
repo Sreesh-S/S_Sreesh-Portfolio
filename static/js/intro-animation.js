@@ -308,6 +308,14 @@
             if (window.playIntroAnimations) {
                 window.playIntroAnimations();
             }
+
+            // Refresh ScrollTrigger positions and force content visibility
+            setTimeout(() => {
+                if (typeof ScrollTrigger !== 'undefined') {
+                    ScrollTrigger.refresh();
+                }
+                window.dispatchEvent(new Event('scroll'));
+            }, 100);
         }
 
         // MAIN CANVAS RENDER LOOP (OPTIMIZED FOR 60 FPS)

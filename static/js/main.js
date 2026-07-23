@@ -198,19 +198,41 @@ document.addEventListener('DOMContentLoaded', function() {
         gsap.from('.reveal-text-delay', { opacity: 0, y: 15, duration: 1, delay: 0.3, ease: 'power2.out' });
         gsap.from('.reveal-ctas', { opacity: 0, y: 20, duration: 1, delay: 0.5, ease: 'power2.out' });
         gsap.from('.hero-visual-content', { opacity: 0, scale: 0.9, duration: 1.2, delay: 0.2, ease: 'power3.out' });
+        
+        if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+        }
     }
     window.playIntroAnimations = playIntroAnimations;
 
-    // Scroll trigger reveals for each section
+    // Robust Fail-Safe: Ensures all page content becomes visible even if GSAP/ScrollTrigger is delayed
+    function forceShowScrollReveals() {
+        const revealElems = document.querySelectorAll('.scroll-reveal-up, .scroll-reveal-left, .scroll-reveal-right, .reveal-text, .reveal-text-delay, .reveal-ctas');
+        revealElems.forEach(elem => {
+            const rect = elem.getBoundingClientRect();
+            // If element is inside or near viewport (or user has scrolled past)
+            if (rect.top < window.innerHeight + 150) {
+                elem.style.opacity = '1';
+                elem.style.visibility = 'visible';
+                elem.style.transform = 'none';
+            }
+        });
+    }
+
+    // Scroll trigger reveals for each section with visibility callbacks
     gsap.utils.toArray('.scroll-reveal-up').forEach(elem => {
         gsap.from(elem, {
             opacity: 0,
-            y: 40,
+            y: 30,
             duration: 0.8,
             scrollTrigger: {
                 trigger: elem,
-                start: 'top 85%',
-                toggleActions: 'play none none none'
+                start: 'top 92%',
+                toggleActions: 'play none none none',
+                onEnter: () => {
+                    elem.style.opacity = '1';
+                    elem.style.visibility = 'visible';
+                }
             }
         });
     });
@@ -218,12 +240,16 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.utils.toArray('.scroll-reveal-left').forEach(elem => {
         gsap.from(elem, {
             opacity: 0,
-            x: -50,
+            x: -30,
             duration: 0.8,
             scrollTrigger: {
                 trigger: elem,
-                start: 'top 85%',
-                toggleActions: 'play none none none'
+                start: 'top 92%',
+                toggleActions: 'play none none none',
+                onEnter: () => {
+                    elem.style.opacity = '1';
+                    elem.style.visibility = 'visible';
+                }
             }
         });
     });
@@ -231,15 +257,32 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.utils.toArray('.scroll-reveal-right').forEach(elem => {
         gsap.from(elem, {
             opacity: 0,
-            x: 50,
+            x: 30,
             duration: 0.8,
             scrollTrigger: {
                 trigger: elem,
-                start: 'top 85%',
-                toggleActions: 'play none none none'
+                start: 'top 92%',
+                toggleActions: 'play none none none',
+                onEnter: () => {
+                    elem.style.opacity = '1';
+                    elem.style.visibility = 'visible';
+                }
             }
         });
     });
+
+    // Run fail-safe reveal checks on scroll and after timers
+    window.addEventListener('scroll', forceShowScrollReveals, { passive: true });
+    setTimeout(forceShowScrollReveals, 1000);
+    setTimeout(forceShowScrollReveals, 2500);
+    setTimeout(() => {
+        // Ultimate fallback: ensure ALL elements are 100% visible after 3.5s
+        document.querySelectorAll('.scroll-reveal-up, .scroll-reveal-left, .scroll-reveal-right, .reveal-text, .reveal-text-delay, .reveal-ctas').forEach(el => {
+            el.style.opacity = '1';
+            el.style.visibility = 'visible';
+            el.style.transform = 'none';
+        });
+    }, 3500);
 
     // 5. Typed.js Subtitle typing
     const typedSubtitle = document.getElementById('typed-subtitle');
