@@ -360,7 +360,10 @@ def blog_detail(request, slug):
     })
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+def is_admin_user(user):
+    return user.is_authenticated and (user.is_superuser or user.is_staff)
+
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def admin_dashboard(request):
     """A beautiful, premium custom admin workspace for visitor analytics and portfolio management."""
     messages = ContactMessage.objects.all()
@@ -429,7 +432,7 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html', context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def toggle_message_read(request, message_id):
     """Toggles read status of contact message."""
     msg = get_object_or_404(ContactMessage, id=message_id)
@@ -438,7 +441,7 @@ def toggle_message_read(request, message_id):
     return JsonResponse({'status': 'success', 'is_read': msg.is_read})
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_message(request, message_id):
     """Deletes a contact message."""
     msg = get_object_or_404(ContactMessage, id=message_id)
@@ -606,7 +609,7 @@ def robots_view(request):
     return render(request, 'robots.txt', {}, content_type="text/plain")
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def update_resume(request):
     """Uploads a new ResumeFile and marks it as active."""
     if request.method == 'POST' and request.FILES.get('resume'):
@@ -625,7 +628,7 @@ def update_resume(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def set_active_resume(request, resume_id):
     """Sets a specific ResumeFile as active."""
     resume = get_object_or_404(ResumeFile, id=resume_id)
@@ -638,7 +641,7 @@ def set_active_resume(request, resume_id):
     return redirect('/admin-dashboard/?msg=resume_activated')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_resume(request, resume_id):
     """Deletes a ResumeFile instance."""
     resume = get_object_or_404(ResumeFile, id=resume_id)
@@ -646,7 +649,7 @@ def delete_resume(request, resume_id):
     return redirect('/admin-dashboard/?msg=resume_deleted')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def add_project(request):
     """Creates a new Project instance with optional Featured Project flag."""
     if request.method == 'POST':
@@ -683,7 +686,7 @@ def add_project(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_project(request, project_id):
     """Deletes a Project instance."""
     project = get_object_or_404(Project, id=project_id)
@@ -691,7 +694,7 @@ def delete_project(request, project_id):
     return redirect('/admin-dashboard/?msg=project_deleted')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def toggle_featured_project(request, project_id):
     """Toggles is_featured state for a Project."""
     project = get_object_or_404(Project, id=project_id)
@@ -700,7 +703,7 @@ def toggle_featured_project(request, project_id):
     return redirect('/admin-dashboard/?msg=project_updated')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def update_project_url(request, project_id):
     """Updates the GitHub repository and Live URLs for a Project."""
     if request.method == 'POST':
@@ -714,7 +717,7 @@ def update_project_url(request, project_id):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def add_skill(request):
     """Adds a new Skill instance."""
     if request.method == 'POST':
@@ -735,7 +738,7 @@ def add_skill(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_skill(request, skill_id):
     """Deletes a Skill instance."""
     skill = get_object_or_404(Skill, id=skill_id)
@@ -743,7 +746,7 @@ def delete_skill(request, skill_id):
     return redirect('/admin-dashboard/?msg=skill_deleted')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def add_certificate(request):
     """Adds a new Certification instance."""
     if request.method == 'POST':
@@ -766,7 +769,7 @@ def add_certificate(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_certificate(request, cert_id):
     """Deletes a Certification instance."""
     cert = get_object_or_404(Certification, id=cert_id)
@@ -774,7 +777,7 @@ def delete_certificate(request, cert_id):
     return redirect('/admin-dashboard/?msg=cert_deleted')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def add_experience(request):
     """Adds a new Experience / Timeline entry."""
     if request.method == 'POST':
@@ -802,7 +805,7 @@ def add_experience(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_experience(request, exp_id):
     """Deletes an Experience instance."""
     exp = get_object_or_404(Experience, id=exp_id)
@@ -810,7 +813,7 @@ def delete_experience(request, exp_id):
     return redirect('/admin-dashboard/?msg=exp_deleted')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def update_profile_pic(request):
     """Updates the main hero profile picture."""
     if request.method == 'POST' and request.FILES.get('profile_pic'):
@@ -841,7 +844,7 @@ def update_profile_pic(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def add_about_photo(request):
     """Uploads a new photo to the About section slideshow gallery."""
     if request.method == 'POST' and request.FILES.get('about_photo'):
@@ -856,7 +859,7 @@ def add_about_photo(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def delete_about_photo(request):
     """Deletes a photo from the About section slideshow gallery."""
     if request.method == 'POST':
@@ -872,7 +875,7 @@ def delete_about_photo(request):
     return redirect('/admin-dashboard/')
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+@user_passes_test(is_admin_user, login_url='/admin/login/')
 def update_about(request):
     """Updates About Section content (about_heading, bio, location, soft_skills, languages)."""
     if request.method == 'POST':

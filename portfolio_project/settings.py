@@ -27,6 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.pythonanywhere.com',
+    'https://sreesh.pythonanywhere.com',
+    'http://*.pythonanywhere.com',
+    'http://sreesh.pythonanywhere.com',
+    'http://127.0.0.1',
+    'http://localhost',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+LOGIN_REDIRECT_URL = '/admin-dashboard/'
+LOGOUT_REDIRECT_URL = '/admin/login/'
+
 
 # Application definition
 
