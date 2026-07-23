@@ -32,6 +32,14 @@ db.sqlite3
 db.sqlite3-journal
 staticfiles/
 
+# Exclude heavy video files from Git (to save deployment disk space)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+media/**/*.mp4
+
 # Environment variables
 .env
 
