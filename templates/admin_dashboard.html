@@ -1,0 +1,1061 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Control Panel | S Sreesh{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* Admin Dashboard Styling */
+    .dashboard-header-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .db-card {
+        padding: 1.5rem;
+        text-align: center;
+        border-radius: 12px;
+    }
+    .db-card h3 {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+    .db-card p {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--primary-accent);
+        margin: 0;
+    }
+
+    /* Tab Navigation */
+    .admin-tab-nav {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 1rem;
+    }
+    .tab-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        color: var(--text-muted);
+        padding: 0.65rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        font-family: var(--font-heading);
+    }
+    .tab-btn:hover {
+        background: rgba(0, 245, 255, 0.1);
+        color: var(--primary-accent);
+        border-color: var(--primary-accent);
+    }
+    .tab-btn.active {
+        background: var(--primary-accent);
+        color: #000;
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
+    }
+
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Admin Form Fields */
+    .admin-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+    .form-group-full {
+        grid-column: span 2;
+    }
+    .admin-input, .admin-textarea, .admin-select {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--glass-border);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.3s ease;
+        font-family: var(--font-heading);
+    }
+    .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+    }
+    .admin-label {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+    }
+
+    /* Data Tables */
+    .db-table-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+        overflow-x: auto;
+        margin-bottom: 2rem;
+    }
+    .db-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        margin-top: 1rem;
+    }
+    .db-table th, .db-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+    .db-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .db-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        padding: 0.45rem 0.9rem;
+        border-radius: 6px;
+        color: var(--text-main);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+    }
+    .db-btn:hover {
+        background: var(--primary-accent);
+        color: #000;
+        border-color: var(--primary-accent);
+    }
+    .db-btn-danger {
+        color: #ff5722;
+        border-color: rgba(255, 87, 34, 0.3);
+    }
+    .db-btn-danger:hover {
+        background: #ff5722;
+        color: #fff;
+        border-color: #ff5722;
+    }
+    .db-btn-success {
+        color: #39FF14;
+        border-color: rgba(57, 255, 20, 0.3);
+    }
+    .db-btn-success:hover {
+        background: #39FF14;
+        color: #000;
+        border-color: #39FF14;
+    }
+
+    /* Badge Tags */
+    .badge-featured {
+        background: rgba(0, 245, 255, 0.15);
+        color: var(--primary-accent);
+        border: 1px solid rgba(0, 245, 255, 0.4);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    .badge-active {
+        background: rgba(57, 255, 20, 0.15);
+        color: #39FF14;
+        border: 1px solid rgba(57, 255, 20, 0.4);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    /* Charts Container */
+    .db-chart-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+    .chart-container-box {
+        padding: 1.5rem;
+        border-radius: 12px;
+        height: 380px;
+        position: relative;
+    }
+
+    .msg-unread {
+        background: rgba(0, 245, 255, 0.05);
+    }
+
+    /* Photo Gallery Admin Grid */
+    .admin-photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .admin-photo-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        border: 1px solid var(--glass-border);
+    }
+    .admin-photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .admin-photo-delete-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 87, 34, 0.9);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
+
+    @media (max-width: 992px) {
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+        .db-chart-section { grid-template-columns: 1fr; }
+        .admin-form-grid { grid-template-columns: 1fr; }
+        .form-group-full { grid-column: span 1; }
+    }
+    @media (max-width: 576px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .chart-container-box { height: 280px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding container" style="margin-top: 6rem;">
+    <!-- Top Header -->
+    <div class="dashboard-header-flex">
+        <div>
+            <span class="section-subtitle">Admin Control Center</span>
+            <h2 class="section-title text-glow">Portfolio Management Workspace</h2>
+            <div class="title-underline" style="margin-top: 0.5rem;"></div>
+        </div>
+        <form action="/admin/logout/" method="post" style="display: inline-block; margin: 0;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/">
+            <button type="submit" class="db-btn db-btn-danger">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout Session
+            </button>
+        </form>
+    </div>
+
+    <!-- Alert Notifications -->
+    {% if request.GET.msg %}
+        <div class="messages-container" style="margin-bottom: 2rem;">
+            <div class="alert alert-success" style="padding: 1rem; border-radius: 8px; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--primary-accent); color: var(--primary-accent); display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                <i class="fa-solid fa-circle-check"></i> Action completed successfully! Portfolio has been updated.
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Top Analytics Overview Cards -->
+    <div class="dashboard-grid">
+        <div class="db-card glass-card">
+            <h3>Total Page Visits</h3>
+            <p id="total-visits-count">{{ total_visits }}</p>
+        </div>
+        <div class="db-card glass-card">
+            <h3>Resume Downloads</h3>
+            <p>{{ total_downloads }}</p>
+        </div>
+        <div class="db-card glass-card">
+            <h3>Inbox Messages</h3>
+            <p>{{ messages.count }}</p>
+        </div>
+        <div class="db-card glass-card">
+            <h3>Unread Messages</h3>
+            <p id="unread-counter" style="color: var(--secondary-accent);">{{ unread_count }}</p>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs for Portfolio Management -->
+    <div class="admin-tab-nav">
+        <button class="tab-btn active" data-tab="tab-projects"><i class="fa-solid fa-diagram-project"></i> Projects & Featured</button>
+        <button class="tab-btn" data-tab="tab-resumes"><i class="fa-solid fa-file-pdf"></i> Resumes Manager</button>
+        <button class="tab-btn" data-tab="tab-skills"><i class="fa-solid fa-microchip"></i> Skills</button>
+        <button class="tab-btn" data-tab="tab-certs"><i class="fa-solid fa-certificate"></i> Certifications</button>
+        <button class="tab-btn" data-tab="tab-exp"><i class="fa-solid fa-briefcase"></i> Timeline & Experience</button>
+        <button class="tab-btn" data-tab="tab-photos"><i class="fa-solid fa-camera"></i> Profile & Gallery Photos</button>
+        <button class="tab-btn" data-tab="tab-about"><i class="fa-solid fa-address-card"></i> About Content Manager</button>
+        <button class="tab-btn" data-tab="tab-inbox"><i class="fa-solid fa-envelope"></i> Messages & Analytics</button>
+    </div>
+
+    <!-- Tab 1: Projects & Featured Projects -->
+    <div id="tab-projects" class="tab-content active">
+        <div class="glass-card db-table-card">
+            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-plus text-primary"></i> Add New Project</span>
+            </h3>
+            <form action="{% url 'portfolio:add_project' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="admin-form-grid">
+                    <div>
+                        <label class="admin-label">Project Title *</label>
+                        <input type="text" name="title" required placeholder="e.g. AI Autonomous Drone Classifier" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Subtitle / Tagline</label>
+                        <input type="text" name="subtitle" placeholder="e.g. Real-Time Object Detection System" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Short Summary (Listing Card) *</label>
+                        <textarea name="description" rows="2" required placeholder="Short summary displayed on project cards..." class="admin-textarea"></textarea>
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Detailed Description (Case Study Overview)</label>
+                        <textarea name="long_description" rows="3" placeholder="Full details, methodology, and implementation breakdown..." class="admin-textarea"></textarea>
+                    </div>
+                    <div>
+                        <label class="admin-label">Tech Stack (Comma Separated)</label>
+                        <input type="text" name="tech_stack" placeholder="Python, Django, Scikit-learn, OpenCV" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">GitHub Repository URL</label>
+                        <input type="url" name="github_url" placeholder="https://github.com/Sreesh-S/your-repo" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Live Demo URL</label>
+                        <input type="url" name="live_url" placeholder="https://your-app.live" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Cover Image</label>
+                        <input type="file" name="image" accept="image/*" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Core Capabilities / Features (One Per Line)</label>
+                        <textarea name="features" rows="3" placeholder="Real-time detection pipeline&#10;Trained model classification&#10;Security dashboard integration" class="admin-textarea"></textarea>
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Technical Challenges & Solutions</label>
+                        <textarea name="challenges" rows="2" placeholder="Key architecture challenges encountered and resolved..." class="admin-textarea"></textarea>
+                    </div>
+                    <div class="form-group-full" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(0, 245, 255, 0.05); padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid rgba(0, 245, 255, 0.2);">
+                        <input type="checkbox" name="is_featured" id="is_featured_check" style="width: 18px; height: 18px; cursor: pointer;">
+                        <label for="is_featured_check" style="cursor: pointer; font-weight: 700; color: var(--primary-accent); font-size: 0.95rem; margin: 0;">
+                            <i class="fa-solid fa-star"></i> Mark as Featured Project (Display prominently at top)
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="db-btn btn-glow" style="margin-top: 1.5rem; width: 100%; justify-content: center; padding: 0.8rem;">
+                    <i class="fa-solid fa-plus"></i> Save & Publish Project
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-card db-table-card">
+            <h3>Existing Projects</h3>
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Featured</th>
+                        <th>Tech Stack</th>
+                        <th>Links</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in projects %}
+                        <tr>
+                            <td>
+                                <strong>{{ p.title }}</strong><br>
+                                <small class="text-muted">{{ p.subtitle }}</small>
+                            </td>
+                            <td>
+                                {% if p.is_featured %}
+                                    <span class="badge-featured"><i class="fa-solid fa-star"></i> Featured</span>
+                                {% else %}
+                                    <span class="text-muted">Standard</span>
+                                {% endif %}
+                            </td>
+                            <td><small>{{ p.tech_stack }}</small></td>
+                            <td>
+                                <form action="{% url 'portfolio:update_project_url' p.id %}" method="post" style="display: flex; flex-direction: column; gap: 0.3rem;">
+                                    {% csrf_token %}
+                                    <input type="url" name="github_url" value="{{ p.github_url|default:'' }}" placeholder="GitHub URL" class="admin-input" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; width: 220px;">
+                                    <button type="submit" class="db-btn" style="padding: 0.15rem 0.4rem; font-size: 0.7rem; align-self: flex-start;">
+                                        <i class="fa-solid fa-floppy-disk"></i> Update URL
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="{% url 'portfolio:toggle_featured_project' p.id %}" class="db-btn" style="margin-right: 0.4rem;">
+                                    {% if p.is_featured %}Unfeature{% else %}Make Featured{% endif %}
+                                </a>
+                                <a href="{% url 'portfolio:delete_project' p.id %}" class="db-btn db-btn-danger" onclick="return confirm('Are you sure you want to delete this project?');">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="text-center">No projects found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 2: Multiple Resumes Manager -->
+    <div id="tab-resumes" class="tab-content">
+        <!-- Active Resume Status Banner Card -->
+        <div class="glass-card db-table-card" style="border: 1px solid var(--primary-accent); background: rgba(0, 245, 255, 0.04); margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h3 style="margin: 0; color: var(--primary-accent); display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem;">
+                        <i class="fa-solid fa-file-pdf"></i> Current Active Resume:
+                    </h3>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 1rem; color: var(--text-main); font-weight: 600;">
+                        {% if active_resume %}
+                            <i class="fa-solid fa-circle-check" style="color: #39FF14;"></i> {{ active_resume.title }}
+                        {% elif profile_resume_url %}
+                            <i class="fa-solid fa-circle-check" style="color: #39FF14;"></i> Active Portfolio Resume File
+                        {% else %}
+                            <span style="color: #ff5722;"><i class="fa-solid fa-triangle-exclamation"></i> No Active Resume Selected</span>
+                        {% endif %}
+                    </p>
+                </div>
+                {% if active_resume and active_resume.file %}
+                    <a href="{{ active_resume.file.url }}" target="_blank" class="db-btn btn-glow" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">
+                        <i class="fa-solid fa-eye"></i> View / Download Active PDF
+                    </a>
+                {% elif profile_resume_url %}
+                    <a href="{{ profile_resume_url }}" target="_blank" class="db-btn btn-glow" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">
+                        <i class="fa-solid fa-eye"></i> View / Download Active PDF
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card db-table-card">
+            <h3><i class="fa-solid fa-cloud-arrow-up text-primary"></i> Upload New Resume</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                You can upload multiple resumes. Select which one is active so visitors download that specific file.
+            </p>
+            <form action="{% url 'portfolio:update_resume' %}" method="post" enctype="multipart/form-data" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                {% csrf_token %}
+                <div style="flex: 1; min-width: 240px;">
+                    <label class="admin-label">Resume Label / Title</label>
+                    <input type="text" name="title" placeholder="e.g. S Sreesh Python Developer 2026.pdf" class="admin-input">
+                </div>
+                <div style="flex: 1; min-width: 240px;">
+                    <label class="admin-label">Select PDF File *</label>
+                    <input type="file" name="resume" accept=".pdf" required class="admin-input">
+                </div>
+                <button type="submit" class="db-btn btn-glow" style="padding: 0.75rem 1.5rem;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Set Active
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-card db-table-card">
+            <h3>Uploaded Resumes Directory</h3>
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Title / File Name</th>
+                        <th>Upload Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in resumes %}
+                        <tr>
+                            <td>
+                                <a href="{{ r.file.url }}" target="_blank" style="color: var(--primary-accent); font-weight: 600; text-decoration: underline;">
+                                    <i class="fa-solid fa-file-pdf"></i> {{ r.title }}
+                                </a>
+                            </td>
+                            <td><small>{{ r.uploaded_at|date:"M d, Y H:i" }}</small></td>
+                            <td>
+                                {% if r.is_active %}
+                                    <span class="badge-active"><i class="fa-solid fa-circle-check"></i> Active Download</span>
+                                {% else %}
+                                    <span class="text-muted">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not r.is_active %}
+                                    <a href="{% url 'portfolio:set_active_resume' r.id %}" class="db-btn db-btn-success" style="margin-right: 0.4rem;">
+                                        <i class="fa-solid fa-check"></i> Set Active
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'portfolio:delete_resume' r.id %}" class="db-btn db-btn-danger" onclick="return confirm('Delete this resume file?');">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        {% if profile_resume_url %}
+                            <tr>
+                                <td>
+                                    <a href="{{ profile_resume_url }}" target="_blank" style="color: var(--primary-accent); text-decoration: underline;">
+                                        <i class="fa-solid fa-file-pdf"></i> Active Portfolio Resume
+                                    </a>
+                                </td>
+                                <td><small>Current Active File</small></td>
+                                <td><span class="badge-active"><i class="fa-solid fa-circle-check"></i> Active Download</span></td>
+                                <td><span class="text-muted">Default</span></td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="4" class="text-center">No resumes uploaded yet.</td></tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 3: Skills -->
+    <div id="tab-skills" class="tab-content">
+        <div class="glass-card db-table-card">
+            <h3><i class="fa-solid fa-plus text-primary"></i> Add New Skill</h3>
+            <form action="{% url 'portfolio:add_skill' %}" method="post" style="margin-top: 1rem;">
+                {% csrf_token %}
+                <div class="admin-form-grid">
+                    <div>
+                        <label class="admin-label">Skill Name *</label>
+                        <input type="text" name="name" required placeholder="e.g. Django or PostgreSQL" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Category *</label>
+                        <select name="category" required class="admin-select">
+                            <option value="Programming">Programming</option>
+                            <option value="Web">Web Development</option>
+                            <option value="Machine Learning">Machine Learning & AI</option>
+                            <option value="Data">Data Analytics & Visualisation</option>
+                            <option value="Database">Databases</option>
+                            <option value="Tools">Tools & DevOps</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="admin-label">Proficiency Percentage (0-100)</label>
+                        <input type="number" name="proficiency" min="0" max="100" value="85" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">FontAwesome Icon Class</label>
+                        <input type="text" name="icon_class" value="fa-solid fa-code" placeholder="fa-brands fa-python" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Hover Glow Color (Hex)</label>
+                        <input type="text" name="hover_glow" value="#00F5FF" placeholder="#00F5FF" class="admin-input">
+                    </div>
+                </div>
+                <button type="submit" class="db-btn btn-glow" style="margin-top: 1.25rem; padding: 0.75rem 1.5rem;">
+                    <i class="fa-solid fa-plus"></i> Add Skill
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-card db-table-card">
+            <h3>Current Skills Grid</h3>
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Category</th>
+                        <th>Proficiency</th>
+                        <th>Icon Class</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in skills %}
+                        <tr>
+                            <td><strong><i class="{{ s.icon_class }}"></i> {{ s.name }}</strong></td>
+                            <td><span class="badge-featured" style="background: rgba(123, 97, 255, 0.15); color: var(--secondary-accent); border-color: rgba(123, 97, 255, 0.4);">{{ s.get_category_display }}</span></td>
+                            <td>{{ s.proficiency }}%</td>
+                            <td><code>{{ s.icon_class }}</code></td>
+                            <td>
+                                <a href="{% url 'portfolio:delete_skill' s.id %}" class="db-btn db-btn-danger" onclick="return confirm('Delete this skill?');">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="text-center">No skills seeded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 4: Certifications -->
+    <div id="tab-certs" class="tab-content">
+        <div class="glass-card db-table-card">
+            <h3><i class="fa-solid fa-plus text-primary"></i> Add New Certification</h3>
+            <form action="{% url 'portfolio:add_certificate' %}" method="post" style="margin-top: 1rem;">
+                {% csrf_token %}
+                <div class="admin-form-grid">
+                    <div>
+                        <label class="admin-label">Certification Title *</label>
+                        <input type="text" name="name" required placeholder="e.g. Cyber Security Internship" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Issuing Organization *</label>
+                        <input type="text" name="issuing_organization" required placeholder="e.g. ALPHA INNOVATION" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Issue Date *</label>
+                        <input type="text" name="issue_date" required placeholder="e.g. Mar 2026" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Credential ID</label>
+                        <input type="text" name="credential_id" placeholder="e.g. ALPHJAN-MAR228" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Credential Verification URL</label>
+                        <input type="url" name="credential_url" placeholder="https://www.linkedin.com/in/s-sreesh/details/certifications/" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Description / Learnings</label>
+                        <textarea name="description" rows="2" placeholder="Summary of training and skills gained..." class="admin-textarea"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="db-btn btn-glow" style="margin-top: 1.25rem; padding: 0.75rem 1.5rem;">
+                    <i class="fa-solid fa-plus"></i> Add Certification
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-card db-table-card">
+            <h3>Verified Certifications</h3>
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Certification</th>
+                        <th>Organization</th>
+                        <th>Issue Date</th>
+                        <th>Credential ID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in certifications %}
+                        <tr>
+                            <td><strong>{{ c.name }}</strong></td>
+                            <td>{{ c.issuing_organization }}</td>
+                            <td><small>{{ c.issue_date }}</small></td>
+                            <td><code>{{ c.credential_id|default:"N/A" }}</code></td>
+                            <td>
+                                <a href="{% url 'portfolio:delete_certificate' c.id %}" class="db-btn db-btn-danger" onclick="return confirm('Delete this certification?');">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="text-center">No certifications found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 5: Timeline & Experience -->
+    <div id="tab-exp" class="tab-content">
+        <div class="glass-card db-table-card">
+            <h3><i class="fa-solid fa-plus text-primary"></i> Add New Timeline / Experience</h3>
+            <form action="{% url 'portfolio:add_experience' %}" method="post" style="margin-top: 1rem;">
+                {% csrf_token %}
+                <div class="admin-form-grid">
+                    <div>
+                        <label class="admin-label">Role / Position *</label>
+                        <input type="text" name="role" required placeholder="e.g. Cyber Security Intern" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Company / Organization *</label>
+                        <input type="text" name="company" required placeholder="e.g. Alpha Innovation Private Limited" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Start Date *</label>
+                        <input type="text" name="start_date" required placeholder="e.g. June 2024" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">End Date *</label>
+                        <input type="text" name="end_date" placeholder="e.g. August 2024 or Present" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Achievements (One Per Line)</label>
+                        <textarea name="achievements" rows="2" placeholder="Gained hands-on experience in vulnerability assessment&#10;Simulated attack vectors" class="admin-textarea"></textarea>
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Responsibilities (One Per Line)</label>
+                        <textarea name="responsibilities" rows="2" placeholder="Monitored network traffic logs&#10;Assisted senior engineers" class="admin-textarea"></textarea>
+                    </div>
+                    <div class="form-group-full" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" name="is_current" id="is_current_check" style="width: 16px; height: 16px;">
+                        <label for="is_current_check" style="cursor: pointer; font-size: 0.9rem; color: var(--text-main);">Currently working in this role</label>
+                    </div>
+                </div>
+                <button type="submit" class="db-btn btn-glow" style="margin-top: 1.25rem; padding: 0.75rem 1.5rem;">
+                    <i class="fa-solid fa-plus"></i> Add Experience
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-card db-table-card">
+            <h3>Experience Timeline Entries</h3>
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Role & Company</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in experiences %}
+                        <tr>
+                            <td>
+                                <strong>{{ e.role }}</strong><br>
+                                <small class="text-muted">{{ e.company }}</small>
+                            </td>
+                            <td><small>{{ e.start_date }} - {{ e.end_date }}</small></td>
+                            <td>
+                                <a href="{% url 'portfolio:delete_experience' e.id %}" class="db-btn db-btn-danger" onclick="return confirm('Delete this experience entry?');">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3" class="text-center">No experience entries found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 6: Profile Picture & About Photos -->
+    <div id="tab-photos" class="tab-content">
+        <div class="admin-form-grid" style="margin-bottom: 2rem;">
+            <!-- Hero Profile Picture -->
+            <div class="glass-card db-table-card" style="margin: 0;">
+                <h3><i class="fa-solid fa-user-gear text-primary"></i> Change Hero Profile Picture</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Upload a new photo for the main hero circular avatar frame.
+                </p>
+                {% if main_profile_pic %}
+                    <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-accent); margin-bottom: 1rem;">
+                        <img src="{{ main_profile_pic }}" alt="Current Hero Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                {% endif %}
+                <form action="{% url 'portfolio:update_profile_pic' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label class="admin-label">Select New Hero Avatar Image</label>
+                    <input type="file" name="profile_pic" accept="image/*" required class="admin-input" style="margin-bottom: 1rem;">
+                    <button type="submit" class="db-btn btn-glow" style="width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-upload"></i> Update Hero Avatar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Upload About Gallery Photo -->
+            <div class="glass-card db-table-card" style="margin: 0;">
+                <h3><i class="fa-solid fa-images text-primary"></i> Add Photo to About Slideshow</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Add new photos to cycle in the About section slideshow gallery.
+                </p>
+                <form action="{% url 'portfolio:add_about_photo' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label class="admin-label">Select Photo File</label>
+                    <input type="file" name="about_photo" accept="image/*" required class="admin-input" style="margin-bottom: 1rem;">
+                    <button type="submit" class="db-btn btn-glow" style="width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-plus"></i> Upload to Slideshow Gallery
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- About Gallery Grid -->
+        <div class="glass-card db-table-card">
+            <h3>About Section Slideshow Gallery Photos</h3>
+            <div class="admin-photo-grid">
+                {% for photo_url in about_photos %}
+                    <div class="admin-photo-item">
+                        <img src="{{ photo_url }}" alt="Gallery Photo">
+                        <form action="{% url 'portfolio:delete_about_photo' %}" method="post" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="filename" value="{{ photo_url|slice:'22:' }}">
+                            <button type="submit" class="admin-photo-delete-btn" title="Delete Photo" onclick="return confirm('Delete this gallery photo?');">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No about gallery photos uploaded yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 8: About Section Content Manager -->
+    <div id="tab-about" class="tab-content">
+        <div class="glass-card db-table-card">
+            <h3><i class="fa-solid fa-pen-to-square text-primary"></i> Edit About Section Content</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                Modify your biography, about section heading, location, soft skills, and languages. Changes will immediately update your portfolio.
+            </p>
+            <form action="{% url 'portfolio:update_about' %}" method="post">
+                {% csrf_token %}
+                <div class="admin-form-grid">
+                    <div class="form-group-full">
+                        <label class="admin-label">About Section Heading *</label>
+                        <input type="text" name="about_heading" value="{{ profile.about_heading|default:'Developing Next-Gen Intelligent Stacks' }}" required placeholder="e.g. Developing Next-Gen Intelligent Stacks" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Main Bio / About Paragraph *</label>
+                        <textarea name="bio" rows="5" required placeholder="Write your main about biography paragraph..." class="admin-textarea">{{ profile.bio }}</textarea>
+                    </div>
+                    <div>
+                        <label class="admin-label">Location / Base *</label>
+                        <input type="text" name="location" value="{{ profile.location|default:'Kerala, India' }}" required placeholder="e.g. Kerala, India" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Soft Skills (Comma Separated)</label>
+                        <input type="text" name="soft_skills" value="{{ profile.soft_skills }}" placeholder="Problem Solving, Analytical Thinking, Team Collaboration" class="admin-input">
+                    </div>
+                    <div class="form-group-full">
+                        <label class="admin-label">Languages Spoken (Comma Separated)</label>
+                        <input type="text" name="languages" value="{{ profile.languages }}" placeholder="English, Malayalam, Hindi" class="admin-input">
+                    </div>
+                </div>
+                <button type="submit" class="db-btn btn-glow" style="margin-top: 1.5rem; width: 100%; justify-content: center; padding: 0.8rem;">
+                    <i class="fa-solid fa-floppy-disk"></i> Save & Update About Content
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tab 7: Messages & Visitor Analytics -->
+    <div id="tab-inbox" class="tab-content">
+        <!-- Analytics Charts -->
+        <div class="db-chart-section">
+            <div class="chart-container-box glass-card">
+                <h3>Visitor Analytics (Last 7 Days)</h3>
+                <canvas id="visitorTrendChart"></canvas>
+            </div>
+            <div class="chart-container-box glass-card">
+                <h3>Top Geolocations</h3>
+                <canvas id="geoBreakdownChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Inbox Table -->
+        <div class="dashboard-tables">
+            <div class="db-table-card glass-card">
+                <h3>Contact Submissions Inbox</h3>
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-table-body">
+                        {% for msg in messages %}
+                            <tr id="msg-row-{{ msg.id }}" class="{% if not msg.is_read %}msg-unread{% endif %}">
+                                <td><small>{{ msg.created_at|date:"M d, H:i" }}</small></td>
+                                <td><strong>{{ msg.name }}</strong><br><small>{{ msg.phone }}</small></td>
+                                <td><a href="mailto:{{ msg.email }}" style="color: var(--primary-accent);">{{ msg.email }}</a></td>
+                                <td>{{ msg.message }}</td>
+                                <td class="status-cell">
+                                    {% if not msg.is_read %}
+                                        <span class="badge-featured" id="badge-{{ msg.id }}" style="background: rgba(123, 97, 255, 0.2); color: var(--secondary-accent); border-color: rgba(123, 97, 255, 0.4);">Unread</span>
+                                    {% else %}
+                                        <span class="text-muted" id="badge-{{ msg.id }}">Read</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="db-btn toggle-read-btn" data-id="{{ msg.id }}">
+                                        Toggle Read
+                                    </button>
+                                    <button class="db-btn db-btn-danger delete-msg-btn" data-id="{{ msg.id }}" style="margin-left: 0.4rem;">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No contact messages received yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tab Navigation Logic
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            const target = btn.dataset.tab;
+            document.getElementById(target).classList.add('active');
+        });
+    });
+
+    // Setup Charts
+    const trendCtx = document.getElementById('visitorTrendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ last_7_days|safe }},
+            datasets: [{
+                label: 'Unique Visitors',
+                data: {{ visitor_trend|safe }},
+                borderColor: '#00F5FF',
+                backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#00F5FF'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#8a8f98' } }
+            },
+            scales: {
+                x: { ticks: { color: '#8a8f98' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#8a8f98' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+            }
+        }
+    });
+
+    const geoCtx = document.getElementById('geoBreakdownChart').getContext('2d');
+    new Chart(geoCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for item in visitors_by_country %}"{{ item.country }}",{% endfor %}],
+            datasets: [{
+                data: [{% for item in visitors_by_country %}{{ item.count }},{% endfor %}],
+                backgroundColor: ['#00F5FF', '#7B61FF', '#39FF14', '#FF5733', '#FFD600'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#8a8f98' } }
+            }
+        }
+    });
+
+    // Inbox Actions via AJAX
+    document.querySelectorAll('.toggle-read-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            fetch(`/admin-dashboard/toggle-read/${id}/`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const row = document.getElementById(`msg-row-${id}`);
+                    const badge = document.getElementById(`badge-${id}`);
+                    const unreadCounter = document.getElementById('unread-counter');
+                    
+                    let currentVal = parseInt(unreadCounter.innerText);
+                    
+                    if(data.is_read) {
+                        row.classList.remove('msg-unread');
+                        badge.className = 'text-muted';
+                        badge.innerText = 'Read';
+                        unreadCounter.innerText = Math.max(0, currentVal - 1);
+                    } else {
+                        row.classList.add('msg-unread');
+                        badge.className = 'badge-featured';
+                        badge.innerText = 'Unread';
+                        unreadCounter.innerText = currentVal + 1;
+                    }
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.delete-msg-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if(!confirm("Are you sure you want to delete this message?")) return;
+            const id = this.getAttribute('data-id');
+            fetch(`/admin-dashboard/delete/${id}/`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const row = document.getElementById(`msg-row-${id}`);
+                    row.remove();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

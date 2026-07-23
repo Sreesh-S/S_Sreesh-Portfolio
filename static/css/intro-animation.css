@@ -1,0 +1,151 @@
+/* -------------------------------------------------------------
+   CINEMATIC 3D CODE EXPLOSION & WARP INTRO ANIMATION
+   ------------------------------------------------------------- */
+
+#cinematic-intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #03050c;
+    z-index: 999999;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    perspective: 1000px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    user-select: none;
+}
+
+#intro-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#intro-typography {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    cursor: pointer;
+    padding: 2rem;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+    will-change: transform, filter, opacity;
+}
+
+#intro-welcome-1 {
+    font-family: 'Fira Code', 'Space Grotesk', monospace;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #8a8f98;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    min-height: 1.6rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#intro-welcome-2 {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #00F5FF;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    line-height: 1.15;
+    text-shadow: 0 0 20px rgba(0, 245, 255, 0.6), 0 0 45px rgba(0, 245, 255, 0.3);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+/* Individual Character Animation Classes */
+.intro-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(5px);
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+}
+
+.intro-char.char-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+
+.intro-char.char-flicker {
+    animation: textFlicker 0.15s ease-in-out;
+}
+
+/* Energy Buildup Vibration */
+.vibrating-text {
+    animation: textVibrate 0.06s infinite alternate ease-in-out;
+}
+
+@keyframes textVibrate {
+    0% { transform: translate(1px, -1px) scale(1.01); filter: drop-shadow(0 0 25px rgba(0, 245, 255, 0.8)); }
+    100% { transform: translate(-1px, 1px) scale(1.02); filter: drop-shadow(0 0 35px rgba(123, 97, 255, 0.9)); }
+}
+
+/* Implosion FX */
+.imploding-text {
+    transform: scale(0.001) rotate(15deg) !important;
+    opacity: 0 !important;
+    filter: blur(12px) brightness(4) !important;
+    transition: transform 0.12s cubic-bezier(0.7, 0, 0.84, 0), opacity 0.12s ease, filter 0.12s ease !important;
+}
+
+/* Skip Indicator */
+#intro-skip-hint {
+    position: absolute;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: rgba(138, 143, 152, 0.5);
+    letter-spacing: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    text-transform: uppercase;
+    background: rgba(5, 8, 22, 0.6);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#intro-skip-hint span {
+    color: var(--primary-accent, #00F5FF);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    #intro-welcome-1 { font-size: 1rem; letter-spacing: 3px; }
+    #intro-welcome-2 { font-size: 2.5rem; letter-spacing: 4px; }
+}
+
+@media (max-width: 576px) {
+    #intro-welcome-1 { font-size: 0.85rem; letter-spacing: 2px; }
+    #intro-welcome-2 { font-size: 1.8rem; letter-spacing: 2px; }
+    #intro-skip-hint { font-size: 0.65rem; bottom: 1.5rem; }
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+    #cinematic-intro {
+        transition: opacity 0.3s ease !important;
+    }
+    .vibrating-text { animation: none !important; }
+}

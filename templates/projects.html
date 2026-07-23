@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Projects | S Sreesh{% endblock %}
+
+{% block content %}
+<section class="section-padding container" style="margin-top: 6rem;">
+    <div class="section-title-wrapper">
+        <span class="section-subtitle">02 / Portfolio</span>
+        <h2 class="section-title text-glow">All Projects</h2>
+        <div class="title-underline"></div>
+    </div>
+    
+    <div class="projects-grid">
+        {% for project in projects %}
+            <!-- Card -->
+            <div class="project-card glass-card scroll-reveal-up" data-glow-color="#7B61FF" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="card-glow-overlay"></div>
+                <div class="project-card-image" style="height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(0, 245, 255, 0.05) 0%, rgba(5, 8, 22, 0.85) 80%); border-bottom: 1px solid var(--border-color);">
+                    {% if project.preview_videos %}
+                        {{ project.preview_videos|json_script:project.slug|add:"-videos-data" }}
+                        <div class="project-video-wrapper" data-project-slug="{{ project.slug }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <video class="project-preview-video" style="width: 100%; height: 100%; object-fit: contain; background-color: rgba(5, 8, 22, 0.85);" muted playsinline autoplay>
+                                <source src="{{ project.preview_videos.0 }}" type="video/mp4">
+                            </video>
+                            <span style="position: absolute; top: 10px; right: 10px; font-size: 0.65rem; background: rgba(0, 245, 255, 0.15); color: var(--primary-accent); padding: 0.15rem 0.4rem; border-radius: 4px; font-family: var(--font-mono); font-weight: bold; border: 1px solid rgba(0, 245, 255, 0.3); z-index: 10; pointer-events: none;">1.5x Speed</span>
+                            <div class="project-video-controls" style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(5, 8, 22, 0.95)); padding: 0.5rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; opacity: 0; transition: opacity 0.3s; z-index: 10;">
+                                <button class="video-play-btn" style="background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 0.85rem; outline: none; padding: 0;">
+                                    <i class="fa-solid fa-pause"></i>
+                                </button>
+                                <input type="range" class="video-timeline-scrubber" min="0" max="100" value="0" style="flex: 1; height: 3px; border-radius: 1.5px; background: rgba(255,255,255,0.25); -webkit-appearance: none; cursor: pointer; outline: none;">
+                                <button class="video-mute-btn" style="background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 0.85rem; outline: none; padding: 0;">
+                                    <i class="fa-solid fa-volume-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <i class="fa-solid fa-folder-open" style="font-size: 4rem; opacity: 0.15;"></i>
+                    {% endif %}
+                </div>
+                <div class="project-card-info" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
+                    <span class="project-category-tag" style="font-size: 0.8rem; text-transform: uppercase; color: var(--primary-accent); margin-bottom: 0.5rem; display: block;">Software Stack</span>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-main);">{{ project.title }}</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">{{ project.subtitle }}</p>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; flex-grow: 1;">{{ project.description }}</p>
+                    
+                    <div class="tech-tags" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        {% for tech in project.get_tech_list %}
+                            <span class="tech-tag" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="project-actions" style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
+                        <a href="{% url 'portfolio:project_detail' project.slug %}" class="btn btn-outline btn-sm btn-glow">
+                            <span>Case Study</span> <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                        {% if project.github_url %}
+                            <a href="{{ project.github_url }}" target="_blank" style="color: var(--text-muted); font-size: 1.3rem;"><i class="fa-brands fa-github"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

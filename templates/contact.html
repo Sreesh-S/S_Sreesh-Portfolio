@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact | S Sreesh{% endblock %}
+
+{% block content %}
+<section class="section-padding container" style="margin-top: 6rem;">
+    <div class="section-title-wrapper">
+        <span class="section-subtitle">06 / Engage</span>
+        <h2 class="section-title text-glow">Get In Touch</h2>
+        <div class="title-underline"></div>
+    </div>
+    
+    <div class="contact-grid">
+        <div class="contact-info-panel">
+            <h3>Let's start a conversation</h3>
+            <p>Feel free to reach out for project collaboration, job opportunities, or technical inquiries. I typically reply within 24 hours.</p>
+            
+            <div class="contact-methods">
+                <div class="method-card glass-card">
+                    <i class="fa-solid fa-envelope method-icon"></i>
+                    <div>
+                        <h4>Email Me</h4>
+                        <a href="mailto:{{ profile.email }}">{{ profile.email }}</a>
+                    </div>
+                </div>
+                <div class="method-card glass-card">
+                    <i class="fa-solid fa-phone method-icon"></i>
+                    <div>
+                        <h4>Call Me</h4>
+                        <a href="tel:{{ profile.phone }}">{{ profile.phone }}</a>
+                    </div>
+                </div>
+                <div class="method-card glass-card">
+                    <i class="fa-brands fa-linkedin method-icon"></i>
+                    <div>
+                        <h4>LinkedIn Profile</h4>
+                        <a href="{{ profile.linkedin }}" target="_blank">in/s-sreesh</a>
+                    </div>
+                </div>
+                <div class="method-card glass-card">
+                    <i class="fa-solid fa-location-crosshairs method-icon"></i>
+                    <div>
+                        <h4>Current Location</h4>
+                        <p>Kerala, India</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-form-panel glass-card">
+            <div class="form-loader-overlay hidden" id="form-loader">
+                <div class="spinner"></div>
+                <p>Encrypting & Dispatching...</p>
+            </div>
+            
+            <div class="success-screen-overlay hidden" id="form-success">
+                <i class="fa-solid fa-circle-check success-icon"></i>
+                <h3>Message Transmitted Successfully!</h3>
+                <p>Thank you. Your message has been logged. Sreesh will contact you shortly.</p>
+                <button class="btn btn-outline btn-sm" id="reset-form-btn">Send Another Message</button>
+            </div>
+            
+            <form id="portfolio-contact-form" method="POST" action="{% url 'portfolio:contact' %}">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact-name">Name</label>
+                        {{ form.name }}
+                        <span class="field-error-msg" id="error-name"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact-email">Email Address</label>
+                        {{ form.email }}
+                        <span class="field-error-msg" id="error-email"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact-phone">Phone Number (Optional)</label>
+                        {{ form.phone }}
+                        <span class="field-error-msg" id="error-phone"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        {{ form.message }}
+                        <span class="field-error-msg" id="error-message"></span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-glow submit-btn w-full">
+                    <span>Send Message</span> <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

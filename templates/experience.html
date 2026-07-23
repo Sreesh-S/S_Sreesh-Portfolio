@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Experience | S Sreesh{% endblock %}
+
+{% block content %}
+<section class="section-padding container" style="margin-top: 6rem;">
+    <div class="section-title-wrapper">
+        <span class="section-subtitle">04 / Roadmap</span>
+        <h2 class="section-title text-glow">Professional timeline</h2>
+        <div class="title-underline"></div>
+    </div>
+    
+    <div class="timeline-container">
+        <div class="timeline-track-line"></div>
+        
+        <!-- Experience -->
+        {% for exp in experiences %}
+            <div class="timeline-item timeline-left">
+                <div class="timeline-marker"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="timeline-card glass-card">
+                    <span class="timeline-period">{{ exp.start_date }} — {{ exp.end_date }}</span>
+                    <h3>{{ exp.role }}</h3>
+                    <h4 class="company-tag">{{ exp.company }}</h4>
+                    <div class="timeline-content-details">
+                        <div class="timeline-bullets">
+                            <h5>Achievements:</h5>
+                            <ul>
+                                {% for ach in exp.get_achievements_list %}
+                                    <li><i class="fa-solid fa-angles-right text-secondary"></i> {{ ach }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        
+        <!-- Education -->
+        {% for edu in educations %}
+            <div class="timeline-item timeline-right">
+                <div class="timeline-marker"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="timeline-card glass-card">
+                    <span class="timeline-period">{{ edu.start_year }} — {{ edu.end_year }}</span>
+                    <h3>{{ edu.degree }}</h3>
+                    <h4 class="company-tag">{{ edu.institution }}</h4>
+                    <p class="timeline-desc">{{ edu.description }}</p>
+                    {% if edu.grade %}
+                        <div class="education-grade-badge">Grade: {{ edu.grade }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} | Case Study{% endblock %}
+
+{% block content %}
+<section class="project-detail-hero">
+    <div class="project-detail-hero-glow"></div>
+    <div class="container project-detail-hero-content">
+        <a href="{% url 'portfolio:home' %}#projects" class="back-link btn btn-glass btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> <span>Back to Projects</span>
+        </a>
+        
+        <span class="project-cat-tag">Project Case Study</span>
+        <h1>{{ project.title }}</h1>
+        <p class="subtitle">{{ project.subtitle }}</p>
+        
+        <div class="tech-tags">
+            {% for tech in project.get_tech_list %}
+                <span class="tech-tag">{{ tech }}</span>
+            {% endfor %}
+        </div>
+        
+        <div class="project-hero-actions">
+            {% if project.github_url %}
+                <a href="{{ project.github_url }}" target="_blank" class="btn btn-primary btn-glow">
+                    <i class="fa-brands fa-github"></i> <span>View Code</span>
+                </a>
+            {% endif %}
+            {% if project.live_url %}
+                <a href="{{ project.live_url }}" target="_blank" class="btn btn-outline">
+                    <i class="fa-solid fa-square-arrow-up-right"></i> <span>Live Demo</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<div class="container project-detail-body">
+    <div class="project-detail-grid">
+        <!-- Main Details Content -->
+        <div class="project-main-info scroll-reveal-left">
+            {% if project.preview_videos %}
+                <div class="glass-card detail-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+                    <h2 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;"><i class="fa-solid fa-circle-play text-primary"></i> Project Demo & Live Preview</h2>
+                    <div class="project-card-image" style="position: relative; overflow: hidden; background: radial-gradient(circle, rgba(0, 245, 255, 0.05) 0%, rgba(5, 8, 22, 0.85) 80%); display: flex; align-items: center; justify-content: center; width: 100%; min-height: 300px; max-height: 480px; border-radius: 12px;">
+                        <div class="project-video-wrapper" data-project-slug="{{ project.slug }}" data-videos='{{ project.preview_videos_json }}' style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <video class="project-preview-video" style="width: 100%; height: 100%; object-fit: contain; background-color: rgba(5, 8, 22, 0.85);" muted playsinline autoplay>
+                                <source src="{{ project.preview_videos.0 }}" type="video/mp4">
+                            </video>
+                            <span class="video-counter-badge" style="position: absolute; top: 12px; right: 12px; font-size: 0.75rem; background: rgba(0, 245, 255, 0.15); color: var(--primary-accent); padding: 0.2rem 0.5rem; border-radius: 4px; font-family: var(--font-mono); font-weight: bold; border: 1px solid rgba(0, 245, 255, 0.3); z-index: 10; pointer-events: none;">1/{{ project.preview_videos|length }} • 1.5x Speed</span>
+
+                            {% if project.preview_videos|length > 1 %}
+                                <button class="video-nav-btn video-prev-btn" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(5, 8, 22, 0.85); border: 1px solid rgba(0, 245, 255, 0.4); color: var(--primary-accent); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 12; transition: all 0.2s;" title="Previous Video">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button class="video-nav-btn video-next-btn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(5, 8, 22, 0.85); border: 1px solid rgba(0, 245, 255, 0.4); color: var(--primary-accent); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 12; transition: all 0.2s;" title="Next Video">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            {% endif %}
+
+                            <div class="project-video-controls" style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(5, 8, 22, 0.95)); padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; opacity: 0; transition: opacity 0.3s; z-index: 10;">
+                                <button class="video-play-btn" style="background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 1rem; outline: none; padding: 0;" title="Play / Pause">
+                                    <i class="fa-solid fa-pause"></i>
+                                </button>
+
+                                {% if project.preview_videos|length > 1 %}
+                                    <button class="video-prev-btn-bar" style="background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 0.9rem; outline: none; padding: 0;" title="Previous Video">
+                                        <i class="fa-solid fa-backward-step"></i>
+                                    </button>
+                                    <button class="video-next-btn-bar" style="background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 0.9rem; outline: none; padding: 0;" title="Next Video">
+                                        <i class="fa-solid fa-forward-step"></i>
+                                    </button>
+                                {% endif %}
+
+                                <input type="range" class="video-timeline-scrubber" min="0" max="100" value="0" style="flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.25); -webkit-appearance: none; cursor: pointer; outline: none;">
+                                <button class="video-mute-btn" style="background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 1rem; outline: none; padding: 0;" title="Mute / Unmute">
+                                    <i class="fa-solid fa-volume-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="glass-card detail-card">
+                <h2>Project Overview</h2>
+                <div class="markdown-content">
+                    <!-- Display long description -->
+                    {{ project.long_description|safe|linebreaksbr }}
+                </div>
+            </div>
+            
+            <div class="glass-card detail-card">
+                <h2>The Technical Challenge</h2>
+                <p>{{ project.challenges|linebreaksbr }}</p>
+            </div>
+        </div>
+        
+        <!-- Sidebar Info -->
+        <div class="project-sidebar scroll-reveal-right">
+            <div class="glass-card sidebar-widget">
+                <h3>Capabilities & Features</h3>
+                <ul class="sidebar-feature-list">
+                    {% for feature in project.get_features_list %}
+                        <li><i class="fa-solid fa-square-check text-primary"></i> <span>{{ feature }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            {% if project.architecture_diagram %}
+                <div class="glass-card sidebar-widget">
+                    <h3>Architecture Diagram</h3>
+                    <div class="arch-diagram-wrapper">
+                        <img src="{{ project.architecture_diagram.url }}" alt="Architecture Diagram" class="img-responsive">
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if related_projects %}
+                <div class="glass-card sidebar-widget">
+                    <h3>Other Projects</h3>
+                    <ul class="related-projects-list">
+                        {% for rp in related_projects %}
+                            <li>
+                                <a href="{% url 'portfolio:project_detail' rp.slug %}">
+                                    <h4>{{ rp.title }}</h4>
+                                    <span>{{ rp.subtitle }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

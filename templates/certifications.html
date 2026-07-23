@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Certifications | S Sreesh{% endblock %}
+
+{% block content %}
+<section class="section-padding container" style="margin-top: 6rem;">
+    <div class="section-title-wrapper">
+        <span class="section-subtitle">05 / Credentials</span>
+        <h2 class="section-title text-glow">Professional Certifications</h2>
+        <div class="title-underline"></div>
+    </div>
+    
+    <div class="certifications-grid">
+        {% for cert in certifications %}
+            <div class="certification-card glass-card tilt-element" style="--cert-glow: {{ cert.hover_glow }}">
+                <div class="cert-glow-ring"></div>
+                <div class="cert-icon-box">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <h3>{{ cert.name }}</h3>
+                <p class="cert-issuer">{{ cert.issuing_organization }}</p>
+                <p class="cert-date">Issued: {{ cert.issue_date }}</p>
+                {% if cert.credential_id %}
+                    <p class="cert-id">ID: <code>{{ cert.credential_id }}</code></p>
+                {% endif %}
+                {% if cert.credential_url %}
+                    <a href="{{ cert.credential_url }}" target="_blank" class="btn btn-outline btn-sm btn-glow cert-action-btn">
+                        <span>Verify Link</span> <i class="fa-solid fa-square-arrow-up-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
