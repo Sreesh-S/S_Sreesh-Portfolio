@@ -19,7 +19,7 @@
             </div>
             
             <h1 class="hero-title">
-                <span class="name-line">Hi, I'm <span class="accent-text text-glow" id="letter-reveal" data-text="S Sreesh" style="color: var(--primary-accent); display: inline-block;">S Sreesh</span></span>
+                <span class="name-line">Hi, I'm <span class="accent-text text-glow" style="color: var(--primary-accent); display: inline-block;">S Sreesh</span></span>
             </h1>
             
             <h2 class="hero-subtitle">
@@ -49,7 +49,7 @@
                     <div class="profile-pic-container">
                         <!-- Profile Pic inside glowing circular frame -->
                         <div class="mesh-gradient-avatar"></div>
-                        <img src="{% if main_profile_pic %}{{ main_profile_pic }}{% elif profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/placeholder_profile.jpg' %}{% endif %}" alt="S Sreesh" class="profile-pic" onerror="this.src='https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Sreesh&backgroundColor=050816&radius=50'">
+                        <img src="{% if main_profile_pic %}{{ main_profile_pic }}{% elif profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/profile.jpeg' %}{% endif %}" alt="S Sreesh" class="profile-pic" onerror="this.src='{% static 'images/profile.jpeg' %}'">
                     </div>
                 </div>
                 <!-- Parallax background shapes -->
@@ -116,7 +116,7 @@
                             <img src="{{ img_url }}" alt="S Sreesh" class="about-img profile-slideshow-img{% if forloop.first %} active{% endif %}" style="opacity: {% if forloop.first %}1{% else %}0{% endif %};">
                         {% endfor %}
                     {% else %}
-                        <img src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/placeholder_profile.jpg' %}{% endif %}" alt="S Sreesh" class="about-img" onerror="this.src='https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Sreesh&backgroundColor=050816&radius=10'">
+                        <img src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/profile.jpeg' %}{% endif %}" alt="S Sreesh" class="about-img" onerror="this.src='{% static 'images/profile.jpeg' %}'">
                     {% endif %}
                 </div>
                 <div class="about-location">

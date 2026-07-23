@@ -167,37 +167,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Dynamic Reveals
     function playIntroAnimations() {
-        // Hero title letters reveal
-        const letterDiv = document.getElementById('letter-reveal');
-        if (letterDiv) {
-            const rawText = letterDiv.getAttribute('data-text') || letterDiv.innerText || 'S Sreesh';
-            letterDiv.innerHTML = '';
-            // Wrap each letter in a span
-            [...rawText].forEach(char => {
-                const span = document.createElement('span');
-                span.innerText = char === ' ' ? '\u00A0' : char;
-                span.style.display = 'inline-block';
-                span.style.opacity = '1';
-                span.style.color = 'var(--primary-accent)';
-                span.style.webkitTextFillColor = 'var(--primary-accent)';
-                letterDiv.appendChild(span);
-            });
-
-            if (typeof gsap !== 'undefined') {
-                gsap.from('#letter-reveal span', {
-                    opacity: 0,
-                    y: 15,
-                    stagger: 0.04,
-                    duration: 0.6,
-                    ease: 'power2.out'
-                });
-            }
+        if (typeof gsap !== 'undefined') {
+            gsap.from('.reveal-text', { opacity: 0.2, y: 10, duration: 0.8, ease: 'power2.out' });
+            gsap.from('.reveal-text-delay', { opacity: 0.2, y: 10, duration: 0.8, delay: 0.2, ease: 'power2.out' });
+            gsap.from('.reveal-ctas', { opacity: 0.2, y: 15, duration: 0.8, delay: 0.3, ease: 'power2.out' });
+            gsap.from('.hero-visual-content', { opacity: 0.2, scale: 0.95, duration: 0.8, delay: 0.1, ease: 'power3.out' });
         }
-
-        gsap.from('.reveal-text', { opacity: 0, y: 15, duration: 1, ease: 'power2.out' });
-        gsap.from('.reveal-text-delay', { opacity: 0, y: 15, duration: 1, delay: 0.3, ease: 'power2.out' });
-        gsap.from('.reveal-ctas', { opacity: 0, y: 20, duration: 1, delay: 0.5, ease: 'power2.out' });
-        gsap.from('.hero-visual-content', { opacity: 0, scale: 0.9, duration: 1.2, delay: 0.2, ease: 'power3.out' });
         
         if (typeof ScrollTrigger !== 'undefined') {
             ScrollTrigger.refresh();

@@ -51,35 +51,39 @@ def track_visitor(request):
     Visitor.objects.create(ip_address=ip, country=country, city=city)
 
 
+import urllib.parse
+
 def get_profile_images():
     """Helper to retrieve all uploaded files inside media/profile images directory."""
     img_dir = os.path.join(settings.MEDIA_ROOT, 'profile images')
-    if not os.path.exists(img_dir):
-        return []
-    try:
-        files = os.listdir(img_dir)
-        images = []
-        for f in sorted(files):
-            if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.svg')):
-                # URL path for browser
-                images.append(f'/media/profile images/{f}')
-        return images
-    except Exception:
-        return []
+    images = []
+    if os.path.exists(img_dir):
+        try:
+            files = os.listdir(img_dir)
+            for f in sorted(files):
+                if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.svg')):
+                    encoded_f = urllib.parse.quote(f)
+                    images.append(f'/media/profile%20images/{encoded_f}')
+        except Exception:
+            pass
+    if not images:
+        images.append('/static/images/profile.jpeg')
+    return images
 
 
 def get_main_profile_pic():
     """Helper to retrieve the single uploaded profile photo inside media/profile directory."""
     img_dir = os.path.join(settings.MEDIA_ROOT, 'profile')
-    if not os.path.exists(img_dir):
-        return None
-    try:
-        files = os.listdir(img_dir)
-        for f in sorted(files):
-            if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.svg')):
-                return f'/media/profile/{f}'
-    except Exception:
-        return None
+    if os.path.exists(img_dir):
+        try:
+            files = os.listdir(img_dir)
+            for f in sorted(files):
+                if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.svg')):
+                    encoded_f = urllib.parse.quote(f)
+                    return f'/media/profile/{encoded_f}'
+        except Exception:
+            pass
+    return '/static/images/profile.jpeg'
 
 
 def get_health_app_videos():

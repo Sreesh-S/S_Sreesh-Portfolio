@@ -72,6 +72,13 @@ body {
     transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
+/* Fail-safe visibility guarantees for text, profile pic, and cards */
+.reveal-text, .reveal-text-delay, .reveal-ctas, .hero-visual-content,
+.scroll-reveal-up, .scroll-reveal-left, .scroll-reveal-right, .profile-pic, .about-img {
+    opacity: 1;
+    visibility: visible;
+}
+
 a {
     color: inherit;
     text-decoration: none;
